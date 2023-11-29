@@ -26,7 +26,7 @@ pip install requests
 * Modify the fields in the config.ini file to match your existing setup.
 * The fields in the config.ini are as follows:
     * [WITNESS] username: This is the username for an existing Witness profile that you wish to use to login to Witness. DEFAULT: admin
-    * [WITNESS] password: This is the password for the same Witness profile. There is not default entry.
+    * [WITNESS] password: This is the password for the same Witness profile. There is no default entry.
     * [WITNESS] ip: This the ip for the existing Witness server. If this script is running on the same machine, it can remain localhost, otherwise it should be the numbered address (e.g 127.0.0.1). DEFAULT: localhost
     * [WITNESS] port: This is the port for the same Witness server. The default Witness port is 7001. DEFAULT: 7001
     * [NMS] ip: This the ip for the existing NMS server. If this script is running on the same machine, it can remain localhost, otherwise it should be the numbered address (e.g 127.0.0.1). DEFAULT: localhost
@@ -55,13 +55,13 @@ pip install requests
 * Remember Witness requires all 3 fields to be considered a match for the action to be taken. Witness only needs to match 1 of the words in a given field  to consider that field a match, and an empty field is automatically considered a match.
 
 #### Running
-* Ideally NMHA will be run once both the Witness and NMS servers are live, but it should be to handle being started before either.
+* Ideally the NMHA will be run once both the Witness and NMS servers are live, but it should be to handle being started before either.
 * To run the script you must have installed python and imported the requests modules.
 * Assuming you have done this, you can simply double-click the script to run it, or run it from a terminal like so:
 ```
 python <PATH>/nmha.py
 ```
-* You can also set it up to run automatically on startup by [following  this  guide](https://www.geeksforgeeks.org/autorun-a-python-script-on-windows-startup/).
+* You can also set it up to run automatically on startup by [following  this  guide](https://www.akadia.com/services/windows_registry.html).
 
 ## Authors
 
