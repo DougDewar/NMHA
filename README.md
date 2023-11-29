@@ -29,17 +29,14 @@ pip install requests
     * [WITNESS] password: This is the password for the same Witness profile. There is not default entry.
     * [WITNESS] ip: This the ip for the existing Witness server. If this script is running on the same machine, it can remain localhost, otherwise it should be the numbered address (e.g 127.0.0.1). DEFAULT: localhost
     * [WITNESS] port: This is the port for the same Witness server. The default Witness port is 7001. DEFAULT: 7001
-<br>
-<br>
     * [NMS] ip: This the ip for the existing NMS server. If this script is running on the same machine, it can remain localhost, otherwise it should be the numbered address (e.g 127.0.0.1). DEFAULT: localhost
     * [NMS] port: This is the port for the same NMS server. The default NMS port is 810. DEFAULT: 810
-<br>
-<br>
     * [LOGS] path: This is the path, which can be relative or absolute, for the folder where the logs will be stored. DEFAULT: logs
     * [LOGS] days: This is the number of days for which a given log will be stored before being automatically deleted. DEFAULT: 30
 
 ### Executing program
 
+#### Creating NMS Alarms
 * The NMHA tries to forward NMS events formatted with 3 fields (plus a timestamp): a source, a caption, and a description. To utilize this NMS alarms must be written in a specific format. The format is as follows:
     * SOURCE-CAPTION-DESCRIPTION
 * Replace each word with the relevant information, maintaining the dashes seperating each field. If the alarm text does not contain exactly 2 dashes, the script will write the entire entry into the description field, leaving the source and caption blank.
@@ -51,8 +48,8 @@ pip install requests
 ![](images/NMSAlert2.png)
 * Will appear like this:\
 ![](images/WitnessAlert2.png)
-<br>
-<br>
+
+#### Creating Witness Events Rules
 * From there you can use these 3 fields to determine the course of action Witness will take in the "Event Rules Menu.\
 ![](images/WitnessEventRules.png)
 * Remember Witness requires all 3 fields to be considered a match for the action to be taken. Witness only needs to match 1 of the words in a given field  to consider that field a match, and an empty field is automatically considered a match.
