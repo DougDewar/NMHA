@@ -54,6 +54,14 @@ pip install requests
 ![](images/WitnessEventRules.png)
 * Remember Witness requires all 3 fields to be considered a match for the action to be taken. Witness only needs to match 1 of the words in a given field  to consider that field a match, and an empty field is automatically considered a match.
 
+#### Running
+* Ideally NMHA will be run once both the Witness and NMS servers are live, but it should be to handle being started before either.
+* To run the script you must have installed python and imported the requests modules.
+* Assuming you have done this, you can simply double-click the script to run it, or run it from a terminal like so:
+```
+python <PATH>/nmha.py
+```
+* You can also set it up to run automatically on startup by [following  this  guide](https://www.geeksforgeeks.org/autorun-a-python-script-on-windows-startup/).
 
 ## Authors
 
