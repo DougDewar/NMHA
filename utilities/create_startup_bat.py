@@ -32,6 +32,8 @@ def main():
         print(bat_file_path)
         with open(bat_file_path, 'w', encoding='utf-8') as bat_file:
             bat_file.write(bat_text)
+        print(f'Path to bat file: {bat_file_path}')
+    input('Press any key to quit.')
 
 if __name__ == '__main__':
     main()
