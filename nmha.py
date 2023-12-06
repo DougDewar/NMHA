@@ -242,7 +242,7 @@ def main():
             logger.error('Connection to NMS server lost.')
             logger.info('Attempting to reconnect.')
             nms_socket = connect_to_nms_server()
-        else:
+        elif authorization_header:
             response = process_nms_message(message, authorization_header)
             response_code = check_response_code(response)
             if response_code == 401:
