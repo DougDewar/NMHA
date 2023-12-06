@@ -11,8 +11,9 @@ import requests
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+FILE_PATH = os.path.dirname(__file__)
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read(f'{FILE_PATH}\\config.ini')
 WITNESS_IP = config['WITNESS']['ip']
 WITNESS_PORT = config['WITNESS']['port']
 WITNESS_URL = f'https://{WITNESS_IP}:{WITNESS_PORT}'
@@ -20,7 +21,7 @@ WITNESS_USERNAME = config['WITNESS']['username']
 WITNESS_PASSWORD = config['WITNESS']['password']
 NMS_IP = config['NMS']['ip']
 NMS_PORT = int(config['NMS']['port'])
-LOG_PATH = config['LOGS']['path']
+LOG_PATH = f'{FILE_PATH}\\{config["LOGS"]["path"]}'
 LOG_NAME = 'wit_sec.log'
 DAYS_OF_BACKUP_LOGS = int(config['LOGS']['days'])
 
@@ -32,7 +33,7 @@ logger.setLevel(logging.DEBUG)
 if os.path.isdir(LOG_PATH) is False:
     os.makedirs(LOG_PATH)
 log_handler = logging.handlers.TimedRotatingFileHandler(
-    f'{LOG_PATH}/{LOG_NAME}',
+    f'{LOG_PATH}\\{LOG_NAME}',
     when='midnight',
     backupCount=DAYS_OF_BACKUP_LOGS
     )
