@@ -20,7 +20,7 @@ The Network Manager to HTTP Adapter (NMHA) takes the messages sent over NMS sock
 ```
 pip install requests
 ```
-* Download the script and config files by clicking "<> Code" and then "Download ZIP".\
+* Download the script and config files by clicking "Code" and then "Download ZIP".\
 ![](images/DownloadZip.png)
 * Extract the ZIP and move the files wherever you would like to run them from.
 * Modify the fields in the config.ini file to match your existing setup.
