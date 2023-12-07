@@ -36,6 +36,10 @@ pip install requests
 
 ### Executing program
 
+#### Setting up NMS
+* The NMHA will only work with NMS if NMS is set to TCP/IP Server, like so:\
+![](images/NMSServer.png)
+
 #### Creating NMS Alarms
 * The NMHA tries to forward NMS events formatted with 3 fields (plus a timestamp): a source, a caption, and a description. To utilize this NMS alarms must be written in a specific format. The format is as follows:
     * SOURCE-CAPTION-DESCRIPTION
@@ -61,7 +65,20 @@ pip install requests
 ```
 python <PATH>/nmha.py
 ```
-* You can also set it up to run automatically on startup by [following  this  guide](https://www.akadia.com/services/windows_registry.html).
+
+#### Add to Startup
+* If you wish to run the script on startup, you can do so using the Windows start up folder by following these steps:
+    * Once the NHMA folder is in it's desired location, run the script located in the "utilities" folder called "create_startup_bat.py".
+    * Before closing the "create_startup_bat.py" program, copy the path to the newly created bat file.\
+    ![](images/CreateBat.png)
+    * Next press the Windows key plus "R" at the same time in order to open the "Run" window.
+    * Type "shell:startup" in textbox.\
+    ![](images/ShellStartup.png)
+    * Windows will open a folder called "Startup", right-click in the folder and select "New -> Shortcut".
+    * When Windows prompts you for the path to the program to be run, paste the path copied from the "create_startup_bat.py" program.\
+    ![](images/CreateShortcut.png)
+    * Click "Next", followed by "Finish" and you should see a shortcut to a file called "nmha.bat". This means you have successfully added the program to startup.
+* Note: If you ever move or rename NMHA folder you will have to repeat this process to re-add it to startup.
 
 ## Authors
 
