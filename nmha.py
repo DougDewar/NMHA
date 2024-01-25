@@ -22,7 +22,7 @@ WITNESS_PASSWORD = config['WITNESS']['password']
 NMS_IP = config['NMS']['ip']
 NMS_PORT = int(config['NMS']['port'])
 LOG_PATH = f'{FILE_PATH}\\{config["LOGS"]["path"]}'
-LOG_NAME = 'wit_sec.log'
+LOG_NAME = 'nmha.log'
 DAYS_OF_BACKUP_LOGS = int(config['LOGS']['days'])
 
 WITNESS_LOGIN_API = '/rest/v2/login/sessions'
