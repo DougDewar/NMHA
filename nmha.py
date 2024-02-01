@@ -14,11 +14,11 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 FILE_PATH = os.path.dirname(__file__)
 config = configparser.ConfigParser()
 config.read(f'{FILE_PATH}\\config.ini')
-WITNESS_IP = config['WITNESS']['ip']
-WITNESS_PORT = config['WITNESS']['port']
-WITNESS_URL = f'https://{WITNESS_IP}:{WITNESS_PORT}'
-WITNESS_USERNAME = config['WITNESS']['username']
-WITNESS_PASSWORD = config['WITNESS']['password']
+PROGRAM_IP = config['PROGRAM']['ip']
+PROGRAM_PORT = config['PROGRAM']['port']
+PROGRAM_URL = f'https://{PROGRAM_IP}:{PROGRAM_PORT}'
+PROGRAM_USERNAME = config['WITNESS']['username']
+PROGRAM_PASSWORD = config['WITNESS']['password']
 NMS_IP = config['NMS']['ip']
 NMS_PORT = int(config['NMS']['port'])
 LOG_PATH = f'{FILE_PATH}\\{config["LOGS"]["path"]}'
@@ -54,8 +54,8 @@ def get_witness_login_details():
         login endpoint.
     """
     login_details = {
-        'username': WITNESS_USERNAME,
-        'password': WITNESS_PASSWORD,
+        'username': PROGRAM_USERNAME,
+        'password': PROGRAM_PASSWORD,
         'setCookie': False
     }
     return login_details
@@ -72,7 +72,7 @@ def request_witness_api(witness_uri, method, **kwargs):
         Reponse object: The object containing the content of the response from
         the server.
     """
-    server_address = f'{WITNESS_URL}{witness_uri}'
+    server_address = f'{PROGRAM_URL}{witness_uri}'
     response = None
     try:
         response = requests.request(method, server_address, **kwargs,
