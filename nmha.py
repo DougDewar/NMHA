@@ -17,8 +17,8 @@ config.read(f'{FILE_PATH}\\config.ini')
 PROGRAM_IP = config['PROGRAM']['ip']
 PROGRAM_PORT = config['PROGRAM']['port']
 PROGRAM_URL = f'https://{PROGRAM_IP}:{PROGRAM_PORT}'
-PROGRAM_USERNAME = config['WITNESS']['username']
-PROGRAM_PASSWORD = config['WITNESS']['password']
+PROGRAM_USERNAME = config['PROGRAM']['username']
+PROGRAM_PASSWORD = config['PROGRAM']['password']
 NMS_IP = config['NMS']['ip']
 NMS_PORT = int(config['NMS']['port'])
 LOG_PATH = f'{FILE_PATH}\\{config["LOGS"]["path"]}'
