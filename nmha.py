@@ -66,6 +66,8 @@ def request_api(uri, method, **kwargs):
                                     timeout=120)
     except requests.exceptions.RequestException as error:
         logger.error('Error in request to %s server: %s', PROGRAM_NAME, error)
+        response = requests.Response()
+        response.status_code = 404
     return response
 
 def create_authorization_header(program_session):
