@@ -1,3 +1,4 @@
 logs/
 test.py
 utilities/nmha.bat
+programs/__pycache__/
