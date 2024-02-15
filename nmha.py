@@ -79,6 +79,8 @@ def request_witness_api(witness_uri, method, **kwargs):
                                     timeout=120)
     except requests.exceptions.RequestException as error:
         logger.error('Error in request to Witness server: %s', error)
+        response = requests.Response()
+        response.status_code = 404
     return response
 
 def create_witness_authorization_header(witness_session):
