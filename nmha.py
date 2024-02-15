@@ -9,11 +9,13 @@ import time
 import configparser
 import requests
 import urllib3
+import programs.nmha_witness as Witness
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 FILE_PATH = os.path.dirname(__file__)
 config = configparser.ConfigParser()
 config.read(f'{FILE_PATH}\\config.ini')
+PROGRAM_NAME = config['PROGRAM']['name']
 PROGRAM_IP = config['PROGRAM']['ip']
 PROGRAM_PORT = config['PROGRAM']['port']
 PROGRAM_URL = f'https://{PROGRAM_IP}:{PROGRAM_PORT}'
@@ -45,22 +47,7 @@ logger.addHandler(log_handler)
 log_handler = logging.StreamHandler()
 logger.addHandler(log_handler)
 
-def get_witness_login_details():
-    """Creates and returns a dictionary containing the required parameters to
-    access the Witness login endpoint.
-
-    Returns:
-        Dictionary: Contains the required parameters to access the Witness
-        login endpoint.
-    """
-    login_details = {
-        'username': PROGRAM_USERNAME,
-        'password': PROGRAM_PASSWORD,
-        'setCookie': False
-    }
-    return login_details
-
-def request_witness_api(witness_uri, method, **kwargs):
+def request_api(uri, method, **kwargs):
     """Sends an HTTP request to the designated Witness API endpoint.
 
     Args:
@@ -72,16 +59,16 @@ def request_witness_api(witness_uri, method, **kwargs):
         Reponse object: The object containing the content of the response from
         the server.
     """
-    server_address = f'{PROGRAM_URL}{witness_uri}'
+    server_address = f'{PROGRAM_URL}{uri}'
     response = None
     try:
         response = requests.request(method, server_address, **kwargs,
                                     timeout=120)
     except requests.exceptions.RequestException as error:
-        logger.error('Error in request to Witness server: %s', error)
+        logger.error('Error in request to %s server: %s', PROGRAM_NAME, error)
     return response
 
-def create_witness_authorization_header(witness_session):
+def create_authorization_header(program_session):
     """Takes the response from the login endpoint and creates a header
     containing the given bearer token.
 
@@ -93,8 +80,8 @@ def create_witness_authorization_header(witness_session):
         Dictionary: Contains a single entry: the bearer token of the relevant
         session.
     """
-    logger.info('Received Witness authorization')
-    bearer_token = witness_session.json()['token']
+    logger.info('Received %s authorization', PROGRAM_NAME)
+    bearer_token = program_session.json()['token']
     header = {'Authorization': f'Bearer {bearer_token}'}
     return header
 
@@ -116,7 +103,7 @@ def check_response_code(response):
         logger.error('Request error, response code: %s.', response_code)
     return response_code
 
-def login_to_witness():
+def login_to_program(login_details):
     """Calls the relevant functions to login to the Witness server and returns
     the bearer token.
 
@@ -124,12 +111,11 @@ def login_to_witness():
         Dictionary: Contains a single entry: the bearer token of the relevant
         session.
     """
-    login_details = get_witness_login_details()
-    response = request_witness_api(
-            WITNESS_LOGIN_API,
+    response = request_api(
+            login_details['url'],
             'POST',
             verify=False,
-            json=login_details)
+            json=login_details['data'])
     if not response:
         logger.error('Failed to login to Witness server.')
         return None
@@ -137,76 +123,17 @@ def login_to_witness():
     if response_code != 200:
         logger.error('Failed to login to Witness server.')
         return None
-    witness_authorization_header = create_witness_authorization_header(
-        response)
-    return witness_authorization_header
+    authorization_header = create_authorization_header(response)
+    return authorization_header
 
-def create_generic_event_body(event_message):
-    """Formats the body of the NMS event to forward to the Witness server,
-    adding a timestamp.
-
-    Args:
-        event_message (String): The decoded message from the NMS server.
-
-    Returns:
-        Dictionary: Contains a timestamp and the message from the NMS,
-        formatted to match the Witness API.
-    """
-    timestamp = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
-    event_body = ''
-    if event_message.count('-') == 2:
-        source, caption, description = event_message.split('-')
-        event_body = {'timestamp': timestamp,
-                      'source': source,
-                      'caption': caption,
-                      'description': description}
-    else:
-        event_body = {'timestamp': timestamp,
-                      'description': event_message}
-    return event_body
-
-def create_generic_witness_event(event_message, witness_authorization_header):
-    """Calls functions to format the NMS message and forward it to the Witness
-    server.
-
-    Args:
-        event_message (String): The decoded message from the NMS server.
-        witness_authorization_header (Dictionary): The bearer token for the
-        Witness session.
-
-    Returns:
-        Response object: The object containing the content of the response from
-        the server.
-    """
-    header = witness_authorization_header
-    header['Content-type'] = 'application/json'
-    event_body = create_generic_event_body(event_message)
-    response = request_witness_api(
-        WITNESS_EVENT_API,
-        'POST',
-        verify=False,
-        headers=header,
-        json=event_body)
-    return response
-
-def process_nms_message(data, witness_authorization_header):
-    """Decodes the message from the NMS server and calls the function to
-    forward it to the Witness server. If not logged in to the Witness server,
-    attempts to reconnect.
-
-    Args:
-        data (Bytes object): The message from the NMS server.
-        witness_authorization_header (Dictionary): The bearer token for the
-        Witness session.
-
-    Returns:
-        Response object: The object containing the content of the response from
-        the server.
-    """
+def process_nms_message(data, program, authorization_header):
     decoded_message = data.decode().strip('\r')
-    if witness_authorization_header:
-        response = create_generic_witness_event(decoded_message,
-                                                witness_authorization_header)
+    timestamp = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
+    event_api = program.get_event_api()
+    event_data = program.create_event(decoded_message, timestamp,
+                                      authorization_header)
+    response = request_api(event_api, 'POST', verify=False,
+                           headers=event_data[0], json=event_data[1])
     return response
 
 def connect_to_nms_server():
@@ -231,24 +158,29 @@ def main():
     Witness session expires, it attempts to create a new one. If the socket
     disconnects, it attempts to reconnect.
     """
-    authorization_header = login_to_witness()
+
+    program = Witness.WitnessProgram(PROGRAM_USERNAME, PROGRAM_PASSWORD)
+    login_details = program.get_login_details()
+    authorization_header = login_to_program(login_details)
 
     nms_socket = connect_to_nms_server()
     while True:
         message = nms_socket.recv(1024)
         if not authorization_header:
-            authorization_header = login_to_witness()
+            authorization_header = login_to_program(login_details)
         if not message:
             logger.error('Connection to NMS server lost.')
             logger.info('Attempting to reconnect.')
             nms_socket = connect_to_nms_server()
         elif authorization_header:
-            response = process_nms_message(message, authorization_header)
+            response = process_nms_message(message, program,
+                                           authorization_header)
             response_code = check_response_code(response)
             if response_code == 401:
                 logger.info('Reauthenticating...')
-                authorization_header = login_to_witness()
-                response = process_nms_message(message, authorization_header)
+                authorization_header = login_to_program(login_details)
+                response = process_nms_message(message, program,
+                                           authorization_header)
                 response_code = check_response_code(response)
             if response_code != 200:
                 logger.error('Unhandled error, message not forwarded.')
